@@ -75,36 +75,36 @@ class SocialGraph:
 
 # Breath First Search will bring make it easy to find the shortest path
 
-    def bfs(self, starting_node, search):
-        # First we make a queue
-        queue = Queue()
-        # Second we make  visited list
-        visited = []
+    # def bfs(self, starting_node, search):
+    #     # First we make a queue
+    #     queue = Queue()
+    #     # Second we make  visited list
+    #     visited = []
 
-        # queue the starting node
-        queue.enqueue([starting_node])
+    #     # queue the starting node
+    #     queue.enqueue([starting_node])
 
-        # while the size of the queue is greater then 0
-        while queue.size() > 0:
-            # create a path for the queue
-            path = queue.dequeue()
-            # Lets grab the last friends in the path
-            friends = path[-1]
-            # If the node is not been visited
-            if friends not in visited:
-                # Then we will check if the friends is in our search
-                if friends == search:
-                    return path
+    #     # while the size of the queue is greater then 0
+    #     while queue.size() > 0:
+    #         # create a path for the queue
+    #         path = queue.dequeue()
+    #         # Lets grab the last friends in the path
+    #         friends = path[-1]
+    #         # If the node is not been visited
+    #         if friends not in visited:
+    #             # Then we will check if the friends is in our search
+    #             if friends == search:
+    #                 return path
 
-          # mark current as visited
-            visited.append(friends)
-            # for each friend of the current friendships
-            for friend in self.friendships[friends]:
-                # put the path to that friend in the queue
-                update_path = path.copy()
-    # Add new friends to the back of the queue
-                update_path.append(friend)
-                queue.enqueue(update_path)
+    #       # mark current as visited
+    #         visited.append(friends)
+    #         # for each friend of the current friendships
+    #         for friend in self.friendships[friends]:
+    #             # put the path to that friend in the queue
+    #             update_path = path.copy()
+    # # Add new friends to the back of the queue
+    #             update_path.append(friend)
+    #             queue.enqueue(update_path)
 
     def getAllSocialPaths(self, userID):
         """
@@ -117,12 +117,34 @@ class SocialGraph:
         """
 
         visited = {}  # Note that this is a dictionary, not a set
+
+        q = Queue()
+
+        path = [userID]
+
+        q.enqueue(path)
+
+        while q.size():
+            path = q.dequeue()
+
+            node = path[-1]
+
+            if node not in visited:
+                visited[node] = path
+
+                for friend in self.friendships[node]:
+                    copy_path = path.copy()
+
+                    copy_path.append(friend)
+                    q.enqueue(copy_path)
+
         # for each friend in the friendships
-        for friend in self.friendships[userID]:
-            path = self.bfs(userID, friend)
-            visited[friend] = path
-        # Search the path for the shortest distance between each friend
-        # return the path
+
+        # for friend in self.friendships[userID]:
+        #     path = self.bfs(userID, friend)
+        #     visited[friend] = path
+        # # Search the path for the shortest distance between each friend
+        # # return the path
         return visited
 
 
