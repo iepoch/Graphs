@@ -1,8 +1,11 @@
+import random
+from util import Stack, Queue
 
 
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -47,8 +50,61 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for user in range(numUsers):
+            self.addUser(user)
 
         # Create friendships
+        friendship_combinations = []
+
+        # make all possible friendship combinations
+        for userID in self.users:
+            for friendID in range(userID + 1, self.lastID + 1):
+                if userID != friendID:
+                    friendship_combinations.append((userID, friendID))
+
+        # shuffle the friendship combinations
+        random.shuffle(friendship_combinations)
+        # take the N number of friendships
+        totalFriendships = avgFriendships * numUsers
+        friends_to_make = friendship_combinations[0: totalFriendships // 2]
+
+        for friendship in friends_to_make:
+            first_friend = friendship[0]
+            second_friend = friendship[1]
+            self.addFriendship(first_friend, second_friend)
+
+# Breath First Search will bring make it easy to find the shortest path
+
+    # def bfs(self, starting_node, search):
+    #     # First we make a queue
+    #     queue = Queue()
+    #     # Second we make  visited list
+    #     visited = []
+
+    #     # queue the starting node
+    #     queue.enqueue([starting_node])
+
+    #     # while the size of the queue is greater then 0
+    #     while queue.size() > 0:
+    #         # create a path for the queue
+    #         path = queue.dequeue()
+    #         # Lets grab the last friends in the path
+    #         friends = path[-1]
+    #         # If the node is not been visited
+    #         if friends not in visited:
+    #             # Then we will check if the friends is in our search
+    #             if friends == search:
+    #                 return path
+
+    #       # mark current as visited
+    #         visited.append(friends)
+    #         # for each friend of the current friendships
+    #         for friend in self.friendships[friends]:
+    #             # put the path to that friend in the queue
+    #             update_path = path.copy()
+    # # Add new friends to the back of the queue
+    #             update_path.append(friend)
+    #             queue.enqueue(update_path)
 
     def getAllSocialPaths(self, userID):
         """
@@ -59,14 +115,42 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
+
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+
+        q = Queue()
+
+        path = [userID]
+
+        q.enqueue(path)
+
+        while q.size():
+            path = q.dequeue()
+
+            node = path[-1]
+
+            if node not in visited:
+                visited[node] = path
+
+                for friend in self.friendships[node]:
+                    copy_path = path.copy()
+
+                    copy_path.append(friend)
+                    q.enqueue(copy_path)
+
+        # for each friend in the friendships
+
+        # for friend in self.friendships[userID]:
+        #     path = self.bfs(userID, friend)
+        #     visited[friend] = path
+        # # Search the path for the shortest distance between each friend
+        # # return the path
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populateGraph(10, 2)
-    print(sg.friendships)
+    print("\nFriendships:", sg.friendships, '\n')
     connections = sg.getAllSocialPaths(1)
-    print(connections)
+    print("Shortest connection:", connections)
